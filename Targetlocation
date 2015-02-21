@@ -10,11 +10,15 @@ from MissionPlanner.Utilities import Locationwp
 def targetloc(DZ_lat,DZ_long):                          #Define the function
 
 x,y = 0,0                                               #Initilise x and y
+dist = cs.wp_dist                                       #Get distance to waypoint
 
 From ImageRecognition import imrec                      #Import the image recognition
 while true                                              #Loop the image recognition intil the target is identified
 x, y = imrec()
 if x,y != 0,0
+break
+if dist <= 20                                           #Break if within 20m of dropzone
+print 'dropzone not found'
 break
 
 lat = cs.lat                                            #Pull the currrent UAS latitude
