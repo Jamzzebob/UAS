@@ -1,0 +1,41 @@
+import sys
+import math
+import time
+import clr
+clr.AddReference("MissionPlanner")
+import MissionPlanner
+clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
+from MissionPlanner.Utilities import Locationwp
+
+def targetloc(DZ_lat,DZ_long):                          #Define the function
+
+x,y = 0,0                                               #Initilise x and y
+
+From ImageRecognition import imrec                      #Import the image recognition
+while true                                              #Loop the image recognition intil the target is identified
+x, y = imrec()
+if x,y != 0,0
+break
+
+lat = cs.lat                                            #Pull the currrent UAS latitude
+long = cs.lng                                           #Pull the current UAS longitude
+
+dist=math.sqrt((x^2)+(y^2))                             #Calcualte the distance to the dropzone
+theta = math.atan2(x,y)                                 #Calculate the angle to the drop zone
+R = 6371000                                             #Radius of the Earth
+
+lat1 = math.asin((math.sin(lat) * math.cos(dist/R))+(math.cos(lat)*math.sin(dist/R)*math.cos(theta)))
+#Calculate the latitude of the dropzone
+long1 = long +math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(lat) , math.cos(dist/R)-math.sin(lat)*math.sin(lat1))
+#Calculate the longitude of the dropzone
+
+latdif = abs(lat=lat1)                                  #Calculate the differnce between calculated lat and given lat
+lngdif = abs(long-long1)                                #Calculate the differnce between calculate long and give long
+
+if (latdif > 5)                                         #If differnce above given value
+DZ_lat = lat1                                           #Update the dropzone latitude
+
+if (lngdif > 5)                                         #If differnce above given value
+DZ_long = long1                                         #Update the dropzone longitude
+
+return DZ_lat , DZ_long                                 #Return the dropzone latitude and longitude
