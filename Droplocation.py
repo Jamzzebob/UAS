@@ -56,4 +56,4 @@ a = math.copysign(a , -(vy-wy))
 sy = sy + (vy*0.01) + 0.5*a*(0.01^2)
 vy = vy + a*0.01
 
-return sx,sy                                    Return the x and y position of the droppoint relative to the dropzone (m)
+return sx,sy                                    #Return the x and y position of the droppoint relative to the dropzone (m)
