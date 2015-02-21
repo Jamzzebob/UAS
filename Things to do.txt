@@ -1,0 +1,19 @@
+Things to Fix
+
+1. The UAS should not navigate to the dropzone before delivering the payloads it should navigate to the
+theoretical droppoint calculated from the wind speed and coordinates of the dropzone
+
+2. When then using the image recognition for better targeting it must take account of the fact that the heading will
+be differnt at the droppoint 
+
+3. If the image recognition fails must release the payload at the calculated droppoint coordinates
+
+4. Safety Script must end when main script ends
+
+Things to Do
+
+1. Take-off
+
+2. Reposition after first payload release
+
+3. Returning and repositioning for landing
