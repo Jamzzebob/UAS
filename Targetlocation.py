@@ -26,7 +26,7 @@ while True:                                              #Loop the image recogni
     break
 
 lat = math.radians(cs.lat)                                            #Pull the currrent UAS latitude
-long = math.radians(cs.lng)                                           #Pull the current UAS longitude
+lon = math.radians(cs.lng)                                           #Pull the current UAS longitude
 
 dist=math.sqrt((x**2)+(y**2))                             #Calcualte the distance to the dropzone
 theta = (math.atan2(x,y)+(2*math.pi)) % (2*math.pi)                                 #Calculate the angle to the drop zone
@@ -34,7 +34,7 @@ R = 6371000                                             #Radius of the Earth
 
 lat1 = ( math.asin((math.sin(lat) * math.cos(dist/R))+(math.cos(lat)*math.sin(dist/R)*math.cos(theta))))
 #Calculate the latitude of the dropzone
-long1 = (long +math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(lat) , math.cos(dist/R)-math.sin(lat)*math.sin(lat1)))
+long1 = (lon +math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(lat) , math.cos(dist/R)-math.sin(lat)*math.sin(lat1)))
 #Calculate the longitude of the dropzone
 
 DZ_latr = math.radians(DZ_lat)
