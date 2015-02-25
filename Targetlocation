@@ -13,33 +13,35 @@ x,y = 0,0                                               #Initilise x and y
 dist = cs.wp_dist                                       #Get distance to waypoint
 
 From ImageRecognition import imrec                      #Import the image recognition
-while true                                              #Loop the image recognition intil the target is identified
-x, y = imrec()
-if x,y != 0,0
-break
-if dist <= 20                                           #Break if within 20m of dropzone
-print 'dropzone not found'
-break
+while True:                                              #Loop the image recognition intil the target is identified
+  x, y = imrec()
+  if x,y != 0,0
+    break
+  if dist <= 20                                           #Break if within 20m of dropzone
+    print 'dropzone not found'
+    break
 
-lat = cs.lat                                            #Pull the currrent UAS latitude
-long = cs.lng                                           #Pull the current UAS longitude
+lat = math.radians(cs.lat)                                            #Pull the currrent UAS latitude
+long = math.radians(cs.lng)                                           #Pull the current UAS longitude
 
-dist=math.sqrt((x^2)+(y^2))                             #Calcualte the distance to the dropzone
+dist=math.sqrt((x**2)+(y**2))                             #Calcualte the distance to the dropzone
 theta = math.atan2(x,y)                                 #Calculate the angle to the drop zone
 R = 6371000                                             #Radius of the Earth
 
-lat1 = math.asin((math.sin(lat) * math.cos(dist/R))+(math.cos(lat)*math.sin(dist/R)*math.cos(theta)))
+lat1 = ( math.asin((math.sin(lat) * math.cos(dist/R))+(math.cos(lat)*math.sin(dist/R)*math.cos(theta))))
 #Calculate the latitude of the dropzone
-long1 = long +math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(lat) , math.cos(dist/R)-math.sin(lat)*math.sin(lat1))
+long1 = (long +math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(lat) , math.cos(dist/R)-math.sin(lat)*math.sin(lat1)))
 #Calculate the longitude of the dropzone
 
-latdif = abs(lat=lat1)                                  #Calculate the differnce between calculated lat and given lat
-lngdif = abs(long-long1)                                #Calculate the differnce between calculate long and give long
+DZ_latr = math.radians(DZ_lat)
+DZ_longr = math.radians(DZ_lat)
 
-if (latdif > 5)                                         #If differnce above given value
-DZ_lat = lat1                                           #Update the dropzone latitude
+a = math.sin((lat1-DZ_latr)/2) * math.sin((lat1-DZ_latr)/2) + math.cos(DZ_latr) * math.cos(lat1) * math.sin((long1-DZ_longr)/2) * math.sin((long1-DZ_longr)/2)t
+c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+d = R * c
 
-if (lngdif > 5)                                         #If differnce above given value
-DZ_long = long1                                         #Update the dropzone longitude
+if (d > 5):                                         #If differnce above given value
+  DZ_lat = math.degrees(lat1)                                          #Update the dropzone latitude
+  DZ_long = math.degrees(long1)                                       #Update the dropzone longitude
 
 return DZ_lat , DZ_long                                 #Return the dropzone latitude and longitude
