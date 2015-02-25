@@ -7,14 +7,11 @@ import MissionPlanner
 clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
 from MissionPlanner.Utilities import Locationwp
 
-while cs.lat == 0                                       #Wait for GPS to connect
- print 'Waiting for GPS'
- Script.Sleep(1000)
-print 'Got GPS'
+Script.ChangeMode("MANUAL")
 
 print 'Resetting Servos'                                #Set all servos to the Neutral position
-for chan in range(1,6)
- Script.SendRC(chan,1500,False)
+for chan in range(1,6):
+	Script.SendRC(chan,1500,False)
 Script.SendRC(3,1000,True)
 Script.Sleep(5000)
 print 'Done'
@@ -28,153 +25,59 @@ Script.WaitFor('ARMING MOTORS', 20000)
 print 'Motors Armed'
 Script.SendRC(4,1500,true)                              #Return Rudder to Neutral position
 
-from Waypoint import *
-print 'Waypoints Set'                                   #Import the waypoint data
+Script.ChangeMode("MANUAL")
 
-#Here Will be code for the plane to take-off
+Script.ChangeMode("AUTO")
 
-#Navigate the dropzone
-Locationwp.lat.SetValue(item,DZ_lat)              # sets latitude
-Locationwp.lng.SetValue(item,DZ_long)             # sets longitude
-Locationwp.alt.SetValue(item,alt)                 # sets altitude
-MAV.setGuidedModeWP(item)                         # tells UAS to go to the set lat/long/alt
-print 'Navigating Drop Zone'
+DZ_lat = math.radians(-35.361259)											#Will be imported from datafile eventually
+DZ_long = math.radians(149.162025)										#Will be imported from datafile eventually
 
-from Targetlocation import targetloc              #Import the target location function
+while True:																						
+    Script.Sleep(100)
+    from Targetlocation import targetloc
+    DZ_lat,DZ_long = targetloc(DZ_lat,DZ_long)
+    wpno = cs.wpno
+    int(wpno)
+    if (wpno == 4):
+        break
 
-DZ_lat,DZ_long = targetloc(DZ_lat,DZ_long)        #Update the Dropzone coordinates
+x = 80
+y = 100
+dist = math.sqrt((x**2)+(y**2))
+print(dist)
+theta = math.atan2(x,y)
+print(theta)
+R = 6371000
 
-While True:                                       #Check arrival at dropzone
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= WaypointTolerence):
-if (dis <= bearingerror):
-break
+DP_lat = math.degrees(math.asin(math.sin(DZ_lat)*math.cos(dist/R) + math.cos(DZ_lat)*math.sin(dist/R)*math.cos(theta)))
+print(DP_lat)
+#Calculate the Latitude of the Droppoint
+DP_long = math.degrees(DZ_long + math.atan2(math.sin(theta)*math.sin(dist/R)*math.cos(DZ_lat) , math.cos(dist/R)-math.sin(DZ_lat)*math.sin(DP_lat)))
+print(DP_long)
+#Calculate the Longitude of the Droppoint
 
-#Navigate Waypoint A
-Locationwp.lat.SetValue(item,WPA_lat)             # sets latitude
-Locationwp.lng.SetValue(item,WPA_long])           # sets longitude
-Locationwp.alt.SetValue(item,alt)                 # sets altitude
-MAV.setGuidedModeWP(item)                         # tells UAS to go to the set lat/long/alt
-Print 'Navigating Waypoint A'
+item = MissionPlanner.Utilities.Locationwp()
+Locationwp.lat.SetValue(item,DP_lat)           # sets latitude
+Locationwp.lng.SetValue(item,DP_long)          # sets longitude
+Locationwp.alt.SetValue(item,30)               # sets altitude
 
-While True:                                       #Check Arrival at waypoint A
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= WaypointTolerence):
-if (dis <= bearingerror):
-break
+print("DP Loaded")
 
-#Navigate waypoint B
-Locationwp.lat.SetValue(item,WPB_lat)           # sets latitude
-Locationwp.lng.SetValue(item,WPB_long)          # sets longitude
-Locationwp.alt.SetValue(item,alt)               # sets altitude
+while True:
+    Script.Sleep(100)
+    wpno = cs.wpno
+    int(wpno)
+    if (wpno == 7):
+        break
+
 MAV.setGuidedModeWP(item)                       # tells UAS to go to the set lat/long/alt
-Print 'Navigating Waypoint B'
+print("Navigating DP")
 
-While True:                                     #Check arrival at waypoint B
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= WaypointTolerence):
-if (dis <= bearingerror):
-break
+Script.Sleep(60000)
 
-#Navigate waypoint C
-Locationwp.lat.SetValue(item,WPC_lat)           # sets latitude
-Locationwp.lng.SetValue(item,WPC_long)          # sets longitude
-Locationwp.alt.SetValue(item,alt)               # sets altitude
-MAV.setGuidedModeWP(item)                       # tells UAS to go to the set lat/long/alt
-Print 'Navigating Waypoint C'
+print("Resuming Mission")
+Script.ChangeMode("AUTO")
 
-While True:                                     #Check Arrival at waypoint C
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= WaypointTolerence):
-if (dis <= bearingerror):
-break
-
-#Navigate to the dropzone
-Locationwp.lat.SetValue(item,DZ_lat)            # sets latitude
-Locationwp.lng.SetValue(item,DZ_lomg)           # sets longitude
-Locationwp.alt.SetValue(item,alt)               # sets altitude
-MAV.setGuidedModeWP(item)                       # tells UAS to go to the set lat/long/alt
-Print 'Navigating Drop Zone'
-
-From targeting import target                    #Import the targeting function
-lat , long = 0 , 0                              #Initilize the latitude and the longitude
-
-while true                                      #Get the droppoint latitude and longitde
-  lat , long = target() 
-  Script.Sleep(1000)
-  if ( lat , long != 0 , 0)
-    break
-  dis = cs.wp_dist
-  if( dis <= 20)                              #If the target has not been recognised within a certain distance
-    #The image recognition will deliver the payload purely by GPS and wind speed calculation
-    #As yet to be implimented
-
-#Navigate to the droppoint
-Locationwp.lat.SetValue(item,lat)             # sets latitude
-Locationwp.lng.SetValue(item,long)            # sets longitude
-Locationwp.alt.SetValue(item,alt)             # sets altitude
-MAV.setGuidedModeWP(item)                     # tells UAS to go to the set lat/long/alt
-Print 'Navigating Drop Point'
-
-While True:                                   #Chech if arrived at droppoint
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= DropTolerence):
-if (dis <= bearingerror):
-break
-
-Script.SendRC(5, 2000, True)                  #Release the payload      
-Print 'Payload 1 released'
-
-#Here the aircraft will reposition to deliver the second payload
-
-#Navigate to the dropzone agian
-Locationwp.lat.SetValue(item,DZ_lat)          # sets latitude
-Locationwp.lng.SetValue(item,DZ_long)         # sets longitude
-Locationwp.alt.SetValue(item,alt)             # sets altitude
-MAV.setGuidedModeWP(item)                     # tells UAS to go to the set lat/long/alt
-Print 'Navigating Drop Zone'
-
-while true                                      #Get the droppoint latitude and longitde
-  lat , long = target() 
-  Script.Sleep(1000)
-  if ( lat , long != 0 , 0)
-    break
-  dis = cs.wp_dist
-  if( dis <= 20)                              #If the target has not been recognised within a certain distance
-    #The image recognition will deliver the payload purely by GPS and wind speed calculation
-    #As yet to be implimented
-
-#Navigate to droppoint
-Locationwp.lat.SetValue(item,lat)             # sets latitude
-Locationwp.lng.SetValue(item,long)            # sets longitude
-Locationwp.alt.SetValue(item,alt)             # sets altitude
-MAV.setGuidedModeWP(item)                     # tells UAS to go to the set lat/long/alt
-Print 'Navigating Drop Point'
-
-While True:                                   #Check arrived at droppoint
-bearingerror= cs.ber_error
-dis= cs.wp_dist
-if (dis <= DropTolerence):
-if (dis <= bearingerror):
-break
-
-Script.SendRC(6, 2000, True)                  #Release payload 2
-Print 'Payload 2 released'
-
-#The UAS must return to a position and then postion it's self so that it can land within the 30x10m box
-
-while true                                    #Land the UAS
- dish = cs.DistToHome
- If dish = Landingdistance
-  Script.ChangeMode("LAND") 
-# changes Mode to "Land"
-  print 'Landing'
-  break
   
   while true                                  #Confirm that the UAS has stopped moving
      speed= cs.groundspeed
