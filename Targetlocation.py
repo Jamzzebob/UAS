@@ -10,14 +10,18 @@ from MissionPlanner.Utilities import Locationwp
 def targetloc(DZ_lat,DZ_long):                          #Define the function
 
 x,y = 0,0                                               #Initilise x and y
-dist = cs.wp_dist                                       #Get distance to waypoint
 
 From ImageRecognition import imrec                      #Import the image recognition
 while True:                                              #Loop the image recognition intil the target is identified
-  x, y = imrec()
-  if x,y != 0,0
+  x, y = imrec(DZ_lat,DZ_long)
+  dist = cs.wp_dist                                       #Get distance to waypoint
+  wpno = cs.wpno                                        #Get Waypoint Number
+  if (x,y != 0,0):
     break
-  if dist <= 20                                           #Break if within 20m of dropzone
+  if (dist <= 20):                                           #Break if within 20m of dropzone
+    print 'dropzone not found'
+    break
+  if (wpno >= 4):                                       #Break if past dropzone
     print 'dropzone not found'
     break
 
@@ -25,7 +29,7 @@ lat = math.radians(cs.lat)                                            #Pull the 
 long = math.radians(cs.lng)                                           #Pull the current UAS longitude
 
 dist=math.sqrt((x**2)+(y**2))                             #Calcualte the distance to the dropzone
-theta = math.atan2(x,y)                                 #Calculate the angle to the drop zone
+theta = (math.atan2(x,y)+(2*math.pi)) % (2*math.pi)                                 #Calculate the angle to the drop zone
 R = 6371000                                             #Radius of the Earth
 
 lat1 = ( math.asin((math.sin(lat) * math.cos(dist/R))+(math.cos(lat)*math.sin(dist/R)*math.cos(theta))))
