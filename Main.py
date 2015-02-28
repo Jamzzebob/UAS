@@ -1,4 +1,5 @@
 import sys
+sys.path.append('Users\James\Desktop\Scripts')
 import math
 import time
 import clr
@@ -6,43 +7,60 @@ clr.AddReference("MissionPlanner")
 import MissionPlanner
 clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
 from MissionPlanner.Utilities import Locationwp
-
 Script.ChangeMode("MANUAL")
 
-print 'Resetting Servos'                                #Set all servos to the Neutral position
+print("Resetting Servos")                                #Set all servos to the Neutral position
 for chan in range(1,6):
-	Script.SendRC(chan,1500,False)
+        Script.SendRC(chan,1500,False)
 Script.SendRC(3,1000,True)
-Script.Sleep(5000)
-print 'Done'
+Script.Sleep(2000)
+print("Done")
 
-print 'Arming Motors'                                   #Arm the Motors
+print("Arming Motors")                                   #Arm the Motors
 Script.ChangeMode("STABILIZE")
 Script.SendRC(3,1000,True)
 Script.SendRC(4,2000,True)
 cs.messages.Clear()
-Script.WaitFor('ARMING MOTORS', 20000)
-print 'Motors Armed'
-Script.SendRC(4,1500,true)                              #Return Rudder to Neutral position
+Script.WaitFor('ARMING MOTORS', 1000)
+print("Motors Armed")
+Script.SendRC(4,1500,True)                              #Return Rudder to Neutral position
 
 Script.ChangeMode("MANUAL")
 
 Script.ChangeMode("AUTO")
 
-DZ_lat = math.radians(-35.361259)											#Will be imported from datafile eventually
-DZ_long = math.radians(149.162025)										#Will be imported from datafile eventually
+from Scripts.Waypoint import DZ_lat
+from Scripts.Waypoint import DZ_long
+from Scripts.Waypoint import r
 
-while True:																						
-    Script.Sleep(100)
-    from Targetlocation import targetloc
-    DZ_lat,DZ_long = targetloc(DZ_lat,DZ_long)
-    wpno = cs.wpno
-    int(wpno)
-    if (wpno == 4):
-        break
+while True:
+        Script.Sleep(100)
+        from Scripts.Targetlocation import targetloc
+        cslat = cs.lat
+        cslng = cs.lng
+        DZ_lat,DZ_long = targetloc(DZ_lat,DZ_long,cslat,cslng)
+        wpno = cs.wpno
+        int(wpno)
+        if (wpno == 4):
+                break
 
-x = 80
-y = 100
+while True:
+        Script.Sleep(100)
+        wpno = cs.wpno
+        int(wpno)
+        if (wpno == 7):
+                break
+
+from Droplocation import dloc
+
+wspd = cs.wspd
+wdir = cs.wdir
+alt = cs.alt
+v = cs.groundspeed
+p = cs.press_abs
+
+x,y = dloc(wspd,wdir,alt,v,p,r)
+
 dist = math.sqrt((x**2)+(y**2))
 print(dist)
 theta = math.atan2(x,y)
@@ -63,30 +81,63 @@ Locationwp.alt.SetValue(item,30)               # sets altitude
 
 print("DP Loaded")
 
+
+
+if (cs.mode == "MANUAL"):
+        print("Mission Failed due to Manual Override")
+        sys.exit()
+else:
+        MAV.setGuidedModeWP(item)                       # tells UAS to go to the set lat/long/alt
+        print("Navigating DP")
+
+
 while True:
-    Script.Sleep(100)
-    wpno = cs.wpno
-    int(wpno)
-    if (wpno == 7):
+        wpdist = cs.wp_dist
+        if (wpdist < 70)
         break
 
-MAV.setGuidedModeWP(item)                       # tells UAS to go to the set lat/long/alt
-print("Navigating DP")
+while True:
+        TB = cs.target_bearing
+        angle = wdir+90
+        if (cs.mode == "MANUAL"):
+        print("Mission Failed due to Manual Override")
+        sys.exit()
+        if (TB < (angle+4)):
+                if (TB > (angle-4)):
+                        Script.SendRC(5,2000,True)
+                        print("Payload 1 Released")
+                        break
 
-Script.Sleep(60000)
+Script.Sleep(3000)
 
-print("Resuming Mission")
-Script.ChangeMode("AUTO")
+while True:
+        TB = cs.target_bearing
+        angle = wdir+90
+        if (cs.mode == "MANUAL"):
+        print("Mission Failed due to Manual Override")
+        sys.exit()
+        if (TB < (angle+4)):
+                if (TB > (angle-4)):
+                        Script.SendRC(6,2000,True)
+                        print("Payload 2 Released")
+                        break
 
+Script.Sleep(3000)
+
+if (cs.mode == "MANUAL"):
+        print("Mission Failed due to Manual Override")
+        sys.exit()
+else:
+        print("Resuming Mission")
+        Script.ChangeMode("AUTO")
   
-  while true                                  #Confirm that the UAS has stopped moving
-     speed= cs.groundspeed
-     If speed = 0
-         break
+while True:                                #Confirm that the UAS has stopped moving
+        speed= cs.groundspeed
+        if (speed == 0):
+                print("Landed")
+                break
 
-Script.SendRC(3,1000,True)                    #Disarm the Motors
-Script.WaitFor('DISARMING MOTORS', 20000)
-print 'Motors Disarmed'
-break
+#Here the Script will Disarm the motors
+print("Motors Disarmed")
 
-print 'Mission Complete'                      #Main script ends
+print("Mission Complete")              #Main script ends
