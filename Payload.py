@@ -9,21 +9,19 @@ import MissionPlanner
 clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
 from MissionPlanner.Utilities import Locationwp
 
-m =                                                         #Define payload mass
-h =                                                         #Define payload height
-w =                                                         #Define payload width
-d =                                                         #Define payload depth
+m = 1                                                         #Define payload mass
+h = 0.22                                                         #Define payload height
+w = 0.15                                                         #Define payload width
+d = 0.08                                                         #Define payload depth
 A1 = w*d                                                    #Calculate payload face area 1
 A2 = h*d                                                    #Calculate payload face area 2
 A3 = h*w                                                    #Calculate payload face area 3
-cd =                                                        #Define payload drag coefficient
+cd = 1.03                                                       #Define payload drag coefficient
 
-def density():                                              #Define the function to calcualate air density
-p = cs.press_abs                                            #Pull air pressure
-alt = cs.alt                                                #Pull altitude
-T0 =288.15                                                  #Temperture at sea level
-R = 8.31447                                                 #Universal gas constant
-M = 0.0289644                                               #Molar mass of dry air
-T = 288.15 -( 0.0065*alt)                                   #Calculate temperture at flying altitude
-rho = (p*M)/(T*R)                                           #Calcualte the air density
-return rho                                                  #Return the air density
+def density(alt,p):                                         #Define the function to calcualate air density                                                #Pull altitude
+    T0 =288.15                                                  #Temperture at sea level
+    R = 8.31447                                                 #Universal gas constant
+    M = 0.0289644                                               #Molar mass of dry air
+    T = T0 -( 0.0065*alt)                                   #Calculate temperture at flying altitude
+    rho = (p*M)/(T*R)                                           #Calcualte the air density
+    return rho                                                  #Return the air density
