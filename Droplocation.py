@@ -10,50 +10,73 @@ import MissionPlanner
 clr.AddReference("MissionPlanner.Utilities") # includes the Utilities class
 from MissionPlanner.Utilities import Locationwp
 
-def dloc():                                     #Define Function dloc()
+def dloc(wspd,wdir,alt,v,p,r):                                     #Define Function dloc()
+  heading = wdir
+  print(heading)
+  wdir = wdir+180
 
-wspd = cs.wind_vel                              #Pull Wind Speed (m)
-wdir = cs.wind_dir                              #Pull Wind DIrection (degrees from north)
-alt = cs.alt                                    #Pull Altitude (m)
+  if (wdir > 360):
+    wdir = wdir-360
 
-wx = wspd * math.cos(math.radians(wdir))        #Calculate component of wind in the x direction
-wy = wspd * math.sin(math.radians(wdir))        #Calculate component of wind in the y direction
+  print(wdir)
 
-from payload import *                           #Import all variable and functions from the payload file
-rho = density()                                 #Call the density Function to work out the air density
+  wx = wspd * math.sin(math.radians(wdir))        #Calculate component of wind in the x direction
+  wy = wspd * math.cos(math.radians(wdir))        #Calculate component of wind in the y direction
+  print(wx)
+  print(wy)
 
-sz = 0                                          #Initilise the displacement in the z directon
-sy = 0                                          #Initilise the displacement in the y directon
-sx = 0                                          #Initilise the displacement in the x directon
-t1 = 0                                          #Initilise the fall time
-t2 = 0                                          #Initilise the counter
-t3 = 0                                          #Initilise the counter
-heading = cs.yaw                                #Pull UAS heading (degrees from North)
-V = cs.groundspeed                              #Pull UAS Velocity
-vz = 0                                          #Initilise Velocity in the z direction
-vx = v * math.cos(math.radians(heading))        #Initilise Velocity in the x direction
-vy = v * math.sin(math.radians(heading))        #Initilise Velocity in the y direction
+  from Scripts.Payload import density                           #Import all variable and functions from the payload file
+  from Scripts.Payload import m                                                         #Import payload mass
+  from Scripts.Payload import A1                                                   #Import payload face area 1
+  from Scripts.Payload import A2                                                    #Import payload face area 2
+  from Scripts.Payload import A3                                                    #Import payload face area 3
+  from Scripts.Payload import cd
+  
+  rho = density(alt,p)                                 #Call the density Function to work out the air density
 
-while ( sz  <  alt )                            #Calculate fall time
-  t= t + 0.01
-  D = 0.5*rho*A1*cd*vz^2
-  a = 9.81-(D/m)
-  sz = sz + (vz*(0.01) + 0.5*a*(0.01^2)
-  vz = vz + a*(0.01)
+  sz = 0                                          #Initilise the displacement in the z directon
+  sy = 0                                          #Initilise the displacement in the y directon
+  sx = 0                                          #Initilise the displacement in the x directon
+  t1 = 0                                          #Initilise the fall time
+  t2 = 0                                          #Initilise the counter
+  t3 = 0                                          #Initilise the counter
+  vz = 0                                          #Initilise Velocity in the z direction0k
+  vx = v * math.sin(math.radians(heading))        #Initilise Velocity in the x direction
+  print(vx)
+  vy = v * math.cos(math.radians(heading))        #Initilise Velocity in the y direction
+  print(vy)
 
-while ( t2 < t1 )                               #Calculate displacement in the x direction
-t2 = t2 + 0.01;
-D = 0.5*rho*A2*cd*(vx-wx)^2
-a = (-D)/m
-sx = sx + (vx*0.01) + 0.5*a*(0.01^2)
-vx = vx + a*0.01
+  while ( sz  <  alt ):                            #Calculate fall time
+    t1= t1 + 0.01
+    D = 0.5*rho*A1*cd*vz**2
+    a = 9.81-(D/m)
+    sz = sz + (vz*(0.01) + 0.5*a*(0.01**2))
+    vz = vz + a*(0.01)
 
-while  ( t3 <=t1 )                              #Calculate displacement in the y direction
-t3= t3 + 0.01
-D = 0.5 * rho * A3 * cd * (abs(vy)-abs(wy))^2
-a = D/m
-a = math.copysign(a , -(vy-wy))
-sy = sy + (vy*0.01) + 0.5*a*(0.01^2)
-vy = vy + a*0.01
+  while ( t2 < t1 ):                               #Calculate displacement in the x direction
+    t2 = t2 + 0.01
+    D = 0.5*rho*A2*cd*(vx - wx)**2
+    a = (D)/m
+    a = math.copysign(a,-vx)
+    sx = sx + (vx*0.01) + 0.5*a*(0.01**2)
+    vx = vx + a*0.01
 
-return sx,sy                                    #Return the x and y position of the droppoint relative to the dropzone (m)
+  while  ( t3 < t1 ):                              #Calculate displacement in the y direction
+    t3 = t3 + 0.01
+    D = 0.5 * rho * A3 * cd * (vy - wy)**2
+    a = (D)/m
+    a = math.copysign(a,-vy)
+    sy = sy + (vy*0.01) + 0.5*a*(0.01**2)
+    vy = vy + a*0.01
+
+  D_angle = heading + 90 
+  if (D_angle > 360):
+    D_angle = D_angle - 360
+
+  x = -r * math.sin(math.radians(D_angle))
+  y = -r * math.cos(math.radians(D_angle))
+
+  sx = sx + x
+  sy = sy + y
+
+  return sx,sy                                    #Return the x and y position of the droppoint relative to the dropzone (m)
