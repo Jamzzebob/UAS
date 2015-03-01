@@ -114,14 +114,14 @@ disp(b)
 
 plot(b(:,1),b(:,2),'x');
 
-fid = fopen('input.txt','wt');
+fid = fopen('Mission.txt','wt');
 for ii = 1:size(a,1)
     fprintf(fid,'%g\t',a(ii,:));
     fprintf(fid,'\n');
 end
 fclose(fid)
 
-fid2 = fopen('geo.fen','wt');
+fid2 = fopen('Geo.fen','wt');
 for ii = 1:size(b,1)
     fprintf(fid2,'%g\t',b(ii,:));
     fprintf(fid2,'\n');
