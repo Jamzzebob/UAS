@@ -60,6 +60,7 @@ end
     
 %sets pre-landing Waypoint from home values
 disp([10,'Pre-Landing waypoint'])
+a([8],[1])=(7);
 lat_3=asin(sin(degtorad(lat_1))*cos(0.400/6371)+cos(degtorad(lat_1))*sin(0.400/6371)*cos(degtorad(brng)));
 lat_3=radtodeg(lat_3);
 a([8],[9])=(lat_3);
@@ -115,6 +116,7 @@ disp(b)
 plot(b(:,1),b(:,2),'x');
 
 fid = fopen('Mission.txt','wt');
+fprintf(fid,'%s\n','QGC WPL 110');
 for ii = 1:size(a,1)
     fprintf(fid,'%g\t',a(ii,:));
     fprintf(fid,'\n');
@@ -122,6 +124,8 @@ end
 fclose(fid)
 
 fid2 = fopen('Geo.fen','wt');
+fprintf(fid2,'%g\t',a([1],[9:10]));
+fprintf(fid2,'\n');
 for ii = 1:size(b,1)
     fprintf(fid2,'%g\t',b(ii,:));
     fprintf(fid2,'\n');
