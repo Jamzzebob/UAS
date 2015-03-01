@@ -61,6 +61,7 @@ end
 %sets pre-landing Waypoint from home values
 disp([10,'Pre-Landing waypoint'])
 a([8],[1])=(7);
+a([8],[4])=(16);
 lat_3=asin(sin(degtorad(lat_1))*cos(0.400/6371)+cos(degtorad(lat_1))*sin(0.400/6371)*cos(degtorad(brng)));
 lat_3=radtodeg(lat_3);
 a([8],[9])=(lat_3);
@@ -84,7 +85,6 @@ a([10],[7])=(input('loiter radius (m): '));
 a([10],[11])=(input('Altitude(m)): '));
 
 %Landing Command
-disp([10,'Landing information'])
 a([11],[1])=(10);
 a([11],[4])=(21); %Waypoint type designation
 lat_4=asin(sin(degtorad(lat_1))*cos(0.01/6371)+cos(degtorad(lat_1))*sin(0.01/6371)*cos(degtorad(brng)));
@@ -93,8 +93,6 @@ a([11],[9])=(lat_4);
 long_4=degtorad(long_1)+atan2((sin(degtorad(brng))*sin(0.01/6371)*cos(degtorad(lat_1))),(cos(0.01/6371)-sin(degtorad(lat_1))*sin(degtorad(lat_4))));
 long_4=radtodeg(long_4);
 a([11],[10])=(long_4);
-
-disp(a)
 
 b=zeros(18,2);
 
@@ -111,23 +109,20 @@ while i<19;
     i=i+1;
 end 
 
-disp(b)
-
-plot(b(:,1),b(:,2),'x');
-
 fid = fopen('Mission.txt','wt');
 fprintf(fid,'%s\n','QGC WPL 110');
-for ii = 1:size(a,1)
+for ii = 1:size(a,1);
     fprintf(fid,'%g\t',a(ii,:));
     fprintf(fid,'\n');
 end
-fclose(fid)
+fclose(fid);
 
 fid2 = fopen('Geo.fen','wt');
 fprintf(fid2,'%g\t',a([1],[9:10]));
 fprintf(fid2,'\n');
-for ii = 1:size(b,1)
+for ii = 1:size(b,1);
     fprintf(fid2,'%g\t',b(ii,:));
     fprintf(fid2,'\n');
 end
-fclose(fid2)
+fclose(fid2);
+
