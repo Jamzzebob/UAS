@@ -121,7 +121,7 @@ for ii = 1:size(a,1)
 end
 fclose(fid)
 
-fid2 = fopen('geo.txt','wt');
+fid2 = fopen('geo.fen','wt');
 for ii = 1:size(b,1)
     fprintf(fid2,'%g\t',b(ii,:));
     fprintf(fid2,'\n');
