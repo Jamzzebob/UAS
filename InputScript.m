@@ -16,7 +16,7 @@ lat_1=input('Homewaypoint Latitude: ');
 a([1],[9])=(lat_1);
 long_1=input('Homewaypoint Longitude: ');
 a([1],[10])=(long_1);
-sea=input('height above sea level: ');
+sea=input('Height above sea level: ');
 a([1],[11])=(sea);
 
 %Waypoint 1 - Takeoff
@@ -31,7 +31,7 @@ a([2],[11])=(input('Anticipated Altitude after takeoff (m)): '));
 disp([10,'Waypoint 2 information'])
 a([3],[1])=(2);
 a([3],[4])=(16);
-brng=input('bearing angle from north (deg): ');
+brng=input('Bearing angle from north (deg): ');
 lat_2=asin(sin(degtorad(lat_1))*cos(0.125/6371)+cos(degtorad(lat_1))*sin(0.125/6371)*cos(degtorad(brng)));
 lat_2=radtodeg(lat_2);
 a([3],[9])=(lat_2);
@@ -126,3 +126,13 @@ for ii = 1:size(b,1);
 end
 fclose(fid2);
 
+r=input('Value of dropzone radius (m): ');
+fid3 = fopen('Waypoint.py','wt');
+fprintf(fid3,'%s\n','import sys');
+fprintf(fid3,'%s\n','import math');
+fprintf(fid3,'%s\n\n','import time');
+DZ_lat=lat_2; DZ_long=long_2;
+fprintf(fid3,'%s %g\t\n','DZ_lat = ', DZ_lat);
+fprintf(fid3,'%s %g\t\n','DZ_long = ', DZ_long);
+fprintf(fid3,'%s %g\t','r = ', r);
+fclose(fid3);
