@@ -12,18 +12,13 @@ from MissionPlanner.Utilities import Locationwp
 
 def dloc(wspd,wdir,alt,v,p,r):                                     #Define Function dloc()
   heading = wdir
-  print(heading)
   wdir = wdir+180
 
   if (wdir > 360):
     wdir = wdir-360
 
-  print(wdir)
-
   wx = wspd * math.sin(math.radians(wdir))        #Calculate component of wind in the x direction
   wy = wspd * math.cos(math.radians(wdir))        #Calculate component of wind in the y direction
-  print(wx)
-  print(wy)
 
   from Scripts.Payload import density                           #Import all variable and functions from the payload file
   from Scripts.Payload import m                                                         #Import payload mass
@@ -42,10 +37,8 @@ def dloc(wspd,wdir,alt,v,p,r):                                     #Define Funct
   t3 = 0                                          #Initilise the counter
   vz = 0                                          #Initilise Velocity in the z direction0k
   vx = v * math.sin(math.radians(heading))        #Initilise Velocity in the x direction
-  print(vx)
   vy = v * math.cos(math.radians(heading))        #Initilise Velocity in the y direction
-  print(vy)
-
+ 
   while ( sz  <  alt ):                            #Calculate fall time
     t1= t1 + 0.01
     D = 0.5*rho*A1*cd*vz**2
@@ -72,6 +65,9 @@ def dloc(wspd,wdir,alt,v,p,r):                                     #Define Funct
   D_angle = heading + 90 
   if (D_angle > 360):
     D_angle = D_angle - 360
+
+  sx = -sx
+  sy = -sy
 
   x = -r * math.sin(math.radians(D_angle))
   y = -r * math.cos(math.radians(D_angle))
